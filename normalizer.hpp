@@ -4,13 +4,16 @@
 
 class normalizer {
 
-std::string filename;
+char* filename;
 sqlite3 *db;
+static std::vector<char*> columnNames;
 //Commented Out As Is Currently Unused
 //std::vector<functional_dependency> table_dependencies;
 
 public:
-	normalizer(std::string new_filename);
+	normalizer(char* new_filename);
+
+	static void set_column_names(std::vector<char*> new_column_names);
 	
-	std::string get_filename();
+	char* get_filename();
 };
