@@ -12,7 +12,7 @@ std::vector<char*> column_names;
 
 public:
 
-	normalizer(char* new_filename);
+	normalizer(char* new_filename, std::string table_name);
 
 	void set_column_names(std::vector<char*> new_column_names);
 	
