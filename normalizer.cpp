@@ -2,15 +2,20 @@
 #include <iostream>
 
 static std::vector<char*> columnNames;
+static int count;
+//strcpy(str2,str1);
 
 
-int callback(void *data, int argc, char **argv, char **azColName){
+static int callback(void *data, int argc, char **argv, char **azColName){
+	count = argc;
 	for(int i = 0; i<argc; i++){
-		columnNames.push_back(azColName[i]);
-		//std::cout << columnNames[i];
+		columnNames.push_back("");
+		//strcpy(columnNames[i], azColName[i]);
 	}
    return 0;
 }
+
+
 
 
 normalizer::normalizer(char* new_filename, std::string table_name) {
@@ -26,7 +31,10 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	} else {
-		normalizer::set_column_names(columnNames);
+		std::cout << count;
+		//printf("%s\n", columnNames[1]);
+		//normalizer::set_column_names(columnNames);
+
 	}
 	sqlite3_close(db);
 }
@@ -35,8 +43,9 @@ char* normalizer::get_filename() {
 	return filename;
 }
 
-void normalizer::set_column_names(std::vector<char*> new_column_names) {
-	column_names = new_column_names;
+void normalizer::set_column_names(std::vector<std::string> new_column_names) {
+	//printf("%s\n", new_column_names[1]);
+	//column_names = new_column_names;
 }
 
 
