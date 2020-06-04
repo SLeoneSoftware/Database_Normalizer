@@ -4,20 +4,29 @@
 static std::vector<std::vector<int> > columnNames;
 
 
-
+//SQL method for callback
 static int callback(void *data, int argc, char **argv, char **azColName){
 	for(int i = 0; i<argc; i++){
 		std::vector<int> word;
 		columnNames.push_back(word);
-		//strcpy(columnNames[i], azColName[i]);
 		std::string name = std::string(azColName[i]);
 		for (std::string::size_type j = 0; j < name.size(); j++) {
-			//std::cout << name[j] << ' ';
 			columnNames[i].push_back(name[j]);
 		}
 	}
    return 0;
 }
+
+//Above function stores all column names as strings to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
+static std::string vector_int_to_string(std::vector<int> word) {
+	std::string toReturn;
+	for (int i = 0; i < word.size(); i++) {
+		toReturn = toReturn + (char) word[i];
+	}
+	return toReturn;
+}
+
+
 
 
 
@@ -35,7 +44,7 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	} else {
-		std::cout << (char) columnNames[0][0];
+		std::cout << vector_int_to_string(columnNames[0]);
 
 	}
 	sqlite3_close(db);
