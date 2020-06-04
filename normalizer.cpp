@@ -1,16 +1,20 @@
 #include "normalizer.hpp"
 #include <iostream>
 
-static std::vector<char*> columnNames;
-static int count;
-//strcpy(str2,str1);
+static std::vector<std::vector<int> > columnNames;
+
 
 
 static int callback(void *data, int argc, char **argv, char **azColName){
-	count = argc;
 	for(int i = 0; i<argc; i++){
-		columnNames.push_back("");
+		std::vector<int> word;
+		columnNames.push_back(word);
 		//strcpy(columnNames[i], azColName[i]);
+		std::string name = std::string(azColName[i]);
+		for (std::string::size_type j = 0; j < name.size(); j++) {
+			//std::cout << name[j] << ' ';
+			columnNames[i].push_back(name[j]);
+		}
 	}
    return 0;
 }
@@ -25,15 +29,13 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 	char *zErrMsg = 0;
 	std::string sql_message = "select * from " + table_name + ";";
 	const char * sql = sql_message.c_str();
-	const char* data = "Callback function called";
+	char **data;
 	rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
 	if( rc != SQLITE_OK ) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	} else {
-		std::cout << count;
-		//printf("%s\n", columnNames[1]);
-		//normalizer::set_column_names(columnNames);
+		std::cout << (char) columnNames[0][0];
 
 	}
 	sqlite3_close(db);
@@ -44,8 +46,7 @@ char* normalizer::get_filename() {
 }
 
 void normalizer::set_column_names(std::vector<std::string> new_column_names) {
-	//printf("%s\n", new_column_names[1]);
-	//column_names = new_column_names;
+
 }
 
 
