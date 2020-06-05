@@ -44,18 +44,17 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	} else {
-		std::cout << vector_int_to_string(columnNames[0]);
+		//set_column_names(columnNames);
 
 	}
 	sqlite3_close(db);
+	const char *toAdd =  vector_int_to_string(columnNames[3]).c_str();
+	column_names.push_back(toAdd);
+	std::cout << column_names[0] << "\n";
 }
 
 char* normalizer::get_filename() {
 	return filename;
-}
-
-void normalizer::set_column_names(std::vector<std::string> new_column_names) {
-
 }
 
 
