@@ -1,7 +1,7 @@
 #include "functional_dependency.hpp"
 #include <iostream>
 
-functional_dependency::functional_dependency(std::vector<int> new_determinant_column_numbers, std::vector<int> new_dependent_column_numbers) {
-	determinant_column_numbers = new_determinant_column_numbers;
-	dependent_column_numbers = new_dependent_column_numbers;
+functional_dependency::functional_dependency(std::vector<std::string> new_determinant_names, std::vector<std::string> new_dependent_names) {
+	determinant_names = new_determinant_names;
+	dependent_names = new_dependent_names;
 }

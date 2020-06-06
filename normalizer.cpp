@@ -44,17 +44,26 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	} else {
-		//set_column_names(columnNames);
+		for (int i = 0; i < columnNames.size(); i++) {
+			const char *toAdd =  vector_int_to_string(columnNames[i]).c_str();
+			column_names.push_back(toAdd);
+			std::cout << column_names[0] << "\n";
+		}
 
 	}
 	sqlite3_close(db);
-	const char *toAdd =  vector_int_to_string(columnNames[3]).c_str();
-	column_names.push_back(toAdd);
-	std::cout << column_names[0] << "\n";
 }
 
 char* normalizer::get_filename() {
 	return filename;
+}
+
+void normalizer::find_dependencies() {
+	std::vector<std::string> determinant;
+	std::vector<std::string>  dependant;
+	determinant.push_back("A");
+	dependant.push_back("B");
+	table_dependencies.push_back(functional_dependency(determinant, dependant));
 }
 
 
