@@ -46,6 +46,7 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 		sqlite3_free(zErrMsg);
 	} else {
 		for (int i = 0; i < columnNames.size(); i++) {
+			int_column_names.push_back(columnNames[i]);
 			const char *toAdd =  vector_int_to_string(columnNames[i]).c_str();
 			column_names.push_back(toAdd);
 			std::cout << column_names[0] << "\n";
@@ -62,17 +63,18 @@ char* normalizer::get_filename() {
 void normalizer::find_dependencies() {
 
 
-	std::vector<std::vector<std::string> > determinant_possibilities;
+
+	std::vector<std::vector<std::vector<int> > > determinant_possibilities;
 
 	//Obtain all subsets of table that could make up a determinant
-	for(int i = 0; i < column_names.size(); i++) {
-		std::string cur_column = std::string(column_names[i]);
-		std::vector<std::string> empty_set;
+	for(int i = 0; i < int_column_names.size(); i++) {
+		std::vector<int> cur_column = int_column_names[i];
+		std::vector<std::vector<int> > empty_set;
 		determinant_possibilities.push_back(empty_set);
 		int determinant_possibilities_size = determinant_possibilities.size();
 		for (int j = 0; j < determinant_possibilities_size; j++) {
-			std::vector<std::string> cur_set = determinant_possibilities[j];
-			std::vector<std::string> new_set;
+			std::vector<std::vector<int> > cur_set = determinant_possibilities[j];
+			std::vector<std::vector<int> > new_set;
 			new_set.push_back(cur_column);
 			int cur_set_size = cur_set.size();
 			for(int k = 0; k < cur_set_size; k++) {
@@ -82,13 +84,12 @@ void normalizer::find_dependencies() {
 		}
 	}
 
-/*
 	for (int i = 0; i < determinant_possibilities.size(); i++) {
 		std::cout << "\n";
 		for (int j = 0; j < determinant_possibilities[i].size(); j++) {
-			std::cout << determinant_possibilities[i][j] << ",";
+			std::cout << vector_int_to_string(determinant_possibilities[i][j]) << ",";
 		}
-	} */
+	}
 
 	//std::vector<std::string>  determinant;
 	//std::vector<std::string>  dependant;

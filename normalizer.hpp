@@ -8,6 +8,7 @@ class normalizer {
 char* filename;
 sqlite3 *db;
 std::vector<const char*> column_names;
+std::vector<std::vector<int> > int_column_names;
 std::vector<functional_dependency> table_dependencies;
 
 
