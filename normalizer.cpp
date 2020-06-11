@@ -18,7 +18,7 @@ static int callback(void *data, int argc, char **argv, char **azColName){
    return 0;
 }
 
-//Above function stores all column names as strings to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
+//Above function stores all column names as ints to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
 static std::string vector_int_to_string(std::vector<int> word) {
 	std::string toReturn;
 	for (int i = 0; i < word.size(); i++) {
@@ -26,11 +26,6 @@ static std::string vector_int_to_string(std::vector<int> word) {
 	}
 	return toReturn;
 }
-
-
-
-
-
 
 normalizer::normalizer(char* new_filename, std::string table_name) {
 	filename = new_filename;
@@ -66,30 +61,32 @@ void normalizer::find_dependencies() {
 
 	std::vector<std::vector<std::vector<int> > > determinant_possibilities;
 
-	//Obtain all subsets of table that could make up a determinant
-	for(int i = 0; i < int_column_names.size(); i++) {
-		std::vector<int> cur_column = int_column_names[i];
+	//Obtain all subsets of table that could make up a determinant, load them into determinant_possibilities
+	int n = int_column_names.size();
+	for(int i = 0; i < (1<<n); i++) {
 		std::vector<std::vector<int> > empty_set;
 		determinant_possibilities.push_back(empty_set);
-		int determinant_possibilities_size = determinant_possibilities.size();
-		for (int j = 0; j < determinant_possibilities_size; j++) {
-			std::vector<std::vector<int> > cur_set = determinant_possibilities[j];
-			std::vector<std::vector<int> > new_set;
-			new_set.push_back(cur_column);
-			int cur_set_size = cur_set.size();
-			for(int k = 0; k < cur_set_size; k++) {
-				new_set.push_back(cur_set[k]);
+		for (int j = 0; j < n; j++) {
+			if ((i & (1 << j)) > 0) {
+				determinant_possibilities[i].push_back(int_column_names[j]);
 			}
-			determinant_possibilities.push_back(new_set);
 		}
 	}
+	//Now that all possibilities have been obtained, each one needs to be tested to see if it is a determinant for any dependency
+	//This Brute Force Algorithm will mark down any potential determinant -> dependent relationship in which the dependent is always the same for the same determinant, and there is no subset determinant for which this is also true
+	for (int i = 0; i < determinant_possibilities.size(); i++) {
 
+	}
+
+
+
+/*
 	for (int i = 0; i < determinant_possibilities.size(); i++) {
 		std::cout << "\n";
 		for (int j = 0; j < determinant_possibilities[i].size(); j++) {
 			std::cout << vector_int_to_string(determinant_possibilities[i][j]) << ",";
 		}
-	}
+	} */
 
 	//std::vector<std::string>  determinant;
 	//std::vector<std::string>  dependant;
