@@ -74,8 +74,16 @@ void normalizer::find_dependencies() {
 	}
 	//Now that all possibilities have been obtained, each one needs to be tested to see if it is a determinant for any dependency
 	//This Brute Force Algorithm will mark down any potential determinant -> dependent relationship in which the dependent is always the same for the same determinant, and there is no subset determinant for which this is also true
+	//Not yet finished
 	for (int i = 0; i < determinant_possibilities.size(); i++) {
-
+		std::vector<std::vector<int> > columns_not_in_determinant;
+		for (int j = 0; j < int_column_names.size(); j++) {
+			for (int k = 0; k < determinant_possibilities[i].size(); k++) {
+				if (vector_int_to_string(int_column_names[j]).compare(vector_int_to_string(determinant_possibilities[i][k])) != 0) {
+					//columns_not_in_determinant.push_back
+				}
+			}
+		}
 	}
 
 
