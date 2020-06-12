@@ -27,6 +27,19 @@ static std::string vector_int_to_string(std::vector<int> word) {
 	return toReturn;
 }
 
+static int equals_vector_int(std::vector<int> one, std::vector<int> two) {
+	if (!(one.size() == two.size())) {
+		return 0;
+	} else {
+		for (int i = 0; i < one.size(); i++) {
+			if (!(one[i] == two[i])) {
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
 normalizer::normalizer(char* new_filename, std::string table_name) {
 	filename = new_filename;
 	int rc;
