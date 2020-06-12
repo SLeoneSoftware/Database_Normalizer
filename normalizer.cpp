@@ -2,21 +2,38 @@
 #include <iostream>
 #include <unordered_map>
 
+static bool set = false;
+static bool add = true;
 static std::vector<std::vector<int> > columnNames;
+static std::vector<std::vector<int> > cur_det;
+static std::vector<std::vector<int> > cur_nondets;
 
 
 //SQL method for callback
 static int callback(void *data, int argc, char **argv, char **azColName){
-	for(int i = 0; i<argc; i++){
-		std::vector<int> word;
-		columnNames.push_back(word);
-		std::string name = std::string(azColName[i]);
-		for (std::string::size_type j = 0; j < name.size(); j++) {
-			columnNames[i].push_back(name[j]);
+	if (!set) {
+		for(int i = 0; i<argc; i++){
+			std::vector<int> word;
+			columnNames.push_back(word);
+			std::string name = std::string(azColName[i]);
+			for (std::string::size_type j = 0; j < name.size(); j++) {
+				columnNames[i].push_back(name[j]);
+			}
 		}
+		set = true;
 	}
    return 0;
 }
+
+
+//SQL method for checking dependencies
+static int callback_two(void *data, int argc, char **argv, char **azColName){
+	for (int i = 0; i < argc; i++) {
+		std::cout << azColName[i];
+	}
+   return 0;
+}
+
 
 //Above function stores all column names as ints to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
 static std::string vector_int_to_string(std::vector<int> word) {
@@ -101,17 +118,47 @@ void normalizer::find_dependencies() {
 				columns_not_in_determinant.push_back(int_column_names[j]);
 			}
 		}
+		//Here, check if any subset of dependents is consistent for every one of the same instances of a determinant
+		for (int k = 0; k < columns_not_in_determinant.size(); k++) {
+			cur_nondets.push_back(columns_not_in_determinant[k]);
+		}
+		for (int k = 0; k < determinant_possibilities[i].size(); k++) {
+			cur_det.push_back(determinant_possibilities[i][k]);
+		}
+
+		int rc;
+		rc = sqlite3_open("test.db", &db);
+		char *zErrMsg = 0;
+		std::string sql_message = "select * from COMPANY;";
+		const char * sql = sql_message.c_str();
+		char **data;
+		rc = sqlite3_exec(db, sql, callback_two, (void*)data, &zErrMsg);
+		if( rc != SQLITE_OK ) {
+			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		} else {
+			sqlite3_close(db);
+			break; //stubbing logic
+		}
+		sqlite3_close(db);
+
+
+
 		/*
-		for (int stubber = 0; stubber < columns_not_in_determinant.size(); stubber++) {
-			std::cout << vector_int_to_string(columns_not_in_determinant[stubber]) << ",";
+		for (int stubber = 0; stubber < cur_nondets.size(); stubber++) {
+			std::cout << vector_int_to_string(cur_nondets[stubber]) << ",";
 		}
 		std::cout << "\n";
-		for (int stubber = 0; stubber < determinant_possibilities[i].size(); stubber++) {
-			std::cout << vector_int_to_string(determinant_possibilities[i][stubber]) << ",";
+		for (int stubber = 0; stubber < cur_det.size(); stubber++) {
+			std::cout << vector_int_to_string(cur_det[stubber]) << ",";
 		}
 		std::cout << "\n";
 		std::cout << "\n";
 		*/
+
+		
+		cur_nondets.clear();
+		cur_det.clear();
 		columns_not_in_determinant.clear();
 	}
 
