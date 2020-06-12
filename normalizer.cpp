@@ -91,12 +91,28 @@ void normalizer::find_dependencies() {
 	for (int i = 0; i < determinant_possibilities.size(); i++) {
 		std::vector<std::vector<int> > columns_not_in_determinant;
 		for (int j = 0; j < int_column_names.size(); j++) {
+			bool toAdd = true;
 			for (int k = 0; k < determinant_possibilities[i].size(); k++) {
-				if (vector_int_to_string(int_column_names[j]).compare(vector_int_to_string(determinant_possibilities[i][k])) != 0) {
-					//columns_not_in_determinant.push_back
+				if (equals_vector_int(int_column_names[j], determinant_possibilities[i][k]) == 1) {
+					toAdd = false;
 				}
 			}
+			if (toAdd) {
+				columns_not_in_determinant.push_back(int_column_names[j]);
+			}
 		}
+		/*
+		for (int stubber = 0; stubber < columns_not_in_determinant.size(); stubber++) {
+			std::cout << vector_int_to_string(columns_not_in_determinant[stubber]) << ",";
+		}
+		std::cout << "\n";
+		for (int stubber = 0; stubber < determinant_possibilities[i].size(); stubber++) {
+			std::cout << vector_int_to_string(determinant_possibilities[i][stubber]) << ",";
+		}
+		std::cout << "\n";
+		std::cout << "\n";
+		*/
+		columns_not_in_determinant.clear();
 	}
 
 
