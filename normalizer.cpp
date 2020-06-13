@@ -7,6 +7,7 @@ static bool add = true;
 static std::vector<std::vector<int> > columnNames;
 static std::vector<std::vector<int> > cur_det;
 static std::vector<std::vector<int> > cur_nondets;
+std::unordered_map<std::string, std::string> umap;
 
 
 //SQL method for callback
@@ -25,16 +26,6 @@ static int callback(void *data, int argc, char **argv, char **azColName){
    return 0;
 }
 
-
-//SQL method for checking dependencies
-static int callback_two(void *data, int argc, char **argv, char **azColName){
-	for (int i = 0; i < argc; i++) {
-		std::cout << azColName[i];
-	}
-   return 0;
-}
-
-
 //Above function stores all column names as ints to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
 static std::string vector_int_to_string(std::vector<int> word) {
 	std::string toReturn;
@@ -43,6 +34,34 @@ static std::string vector_int_to_string(std::vector<int> word) {
 	}
 	return toReturn;
 }
+
+//SQL method for checking dependencies
+static int callback_two(void *data, int argc, char **argv, char **azColName){
+	std::string determinant = "";
+	std::string dependant = "";
+	for (int i = 0; i < argc; i++) {
+		//std::cout << azColName[i];
+		for (int j = 0; j < cur_det.size(); j++) {
+			if (vector_int_to_string(cur_det[j]).compare(std::string(azColName[i])) != 0) {
+				determinant = determinant + std::string(argv[i]);
+			} else {
+				dependant = dependant + std::string(argv[i]);
+			}
+		}
+	}
+	if (umap.find(determinant) == umap.end()) {
+		umap[determinant] = dependant;
+		std::cout << "This tuple is okay" << "\n";
+	} else {
+		if (!(umap[determinant] == dependant)) {
+			std::cout << "Remove Dependency from chart";
+		} else {
+			std::cout << "This tuple is okay" << "\n";
+		}
+	}
+   return 0;
+}
+
 
 static int equals_vector_int(std::vector<int> one, std::vector<int> two) {
 	if (!(one.size() == two.size())) {
@@ -74,7 +93,7 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 			int_column_names.push_back(columnNames[i]);
 			const char *toAdd =  vector_int_to_string(columnNames[i]).c_str();
 			column_names.push_back(toAdd);
-			std::cout << column_names[0] << "\n";
+			//std::cout << column_names[0] << "\n";
 		}
 
 	}
@@ -159,6 +178,7 @@ void normalizer::find_dependencies() {
 		
 		cur_nondets.clear();
 		cur_det.clear();
+		umap.clear();
 		columns_not_in_determinant.clear();
 	}
 
