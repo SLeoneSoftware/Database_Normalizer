@@ -10,4 +10,10 @@ class functional_dependency {
 public:
 	functional_dependency(std::vector<std::string> new_determinant_names, std::vector<std::string> new_dependent_names);
 
+	std::vector<std::string> get_determinant_names();
+
+	std::vector<std::string> get_dependent_names();
+
+	std::string toString();
+
 };

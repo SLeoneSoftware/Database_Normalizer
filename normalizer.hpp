@@ -17,6 +17,12 @@ public:
 	normalizer(char* new_filename, std::string table_name);
 
 	void find_dependencies();
+
+	void set_dependencies(std::vector<functional_dependency>);
 	
 	char* get_filename();
+
+	std::vector<functional_dependency> get_dependencies();
+
+
 };

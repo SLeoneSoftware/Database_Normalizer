@@ -26,7 +26,7 @@ static int callback(void *data, int argc, char **argv, char **azColName){
    return 0;
 }
 
-//Above function stores all column names as ints to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
+//Above function stores all column names as vector ints to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
 static std::string vector_int_to_string(std::vector<int> word) {
 	std::string toReturn;
 	for (int i = 0; i < word.size(); i++) {
@@ -40,7 +40,6 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 	std::string determinant = "";
 	std::string dependant = "";
 	for (int i = 0; i < argc; i++) {
-		//std::cout << azColName[i];
 		for (int j = 0; j < cur_det.size(); j++) {
 			if (vector_int_to_string(cur_det[j]).compare(std::string(azColName[i])) != 0) {
 				determinant = determinant + std::string(argv[i]);
@@ -51,12 +50,13 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 	}
 	if (umap.find(determinant) == umap.end()) {
 		umap[determinant] = dependant;
-		std::cout << "This tuple is okay" << "\n";
+		//std::cout << "This tuple is okay" << "\n";
 	} else {
 		if (!(umap[determinant] == dependant)) {
-			std::cout << "Remove Dependency from chart";
+			//std::cout << "Remove Dependency from chart";
+			add = false;
 		} else {
-			std::cout << "This tuple is okay" << "\n";
+			//std::cout << "This tuple is okay" << "\n";
 		}
 	}
    return 0;
@@ -137,7 +137,9 @@ void normalizer::find_dependencies() {
 				columns_not_in_determinant.push_back(int_column_names[j]);
 			}
 		}
+
 		//Here, check if any subset of dependents is consistent for every one of the same instances of a determinant
+
 		for (int k = 0; k < columns_not_in_determinant.size(); k++) {
 			cur_nondets.push_back(columns_not_in_determinant[k]);
 		}
@@ -157,56 +159,44 @@ void normalizer::find_dependencies() {
 			sqlite3_free(zErrMsg);
 		} else {
 			sqlite3_close(db);
-			break; //stubbing logic
 		}
 		sqlite3_close(db);
 
+		if (add) {
 
+			//Make sure there is no subset yet
 
-		/*
-		for (int stubber = 0; stubber < cur_nondets.size(); stubber++) {
-			std::cout << vector_int_to_string(cur_nondets[stubber]) << ",";
+			std::vector<std::string>  determinant;
+			std::vector<std::string>  dependant;
+
+			for (int k = 0; k < columns_not_in_determinant.size(); k++) {
+				dependant.push_back(vector_int_to_string(columns_not_in_determinant[k]));
+			}
+
+			for (int k = 0; k < determinant_possibilities[i].size(); k++) {
+				determinant.push_back(vector_int_to_string(determinant_possibilities[i][k]));
+			}
+
+			table_dependencies.push_back(functional_dependency(determinant, dependant));
+
 		}
-		std::cout << "\n";
-		for (int stubber = 0; stubber < cur_det.size(); stubber++) {
-			std::cout << vector_int_to_string(cur_det[stubber]) << ",";
-		}
-		std::cout << "\n";
-		std::cout << "\n";
-		*/
 
 		
 		cur_nondets.clear();
 		cur_det.clear();
 		umap.clear();
 		columns_not_in_determinant.clear();
+		add = true;
 	}
 
+}
 
+std::vector<functional_dependency> normalizer::get_dependencies() {
+	return table_dependencies;
+}
 
-/*
-	for (int i = 0; i < determinant_possibilities.size(); i++) {
-		std::cout << "\n";
-		for (int j = 0; j < determinant_possibilities[i].size(); j++) {
-			std::cout << vector_int_to_string(determinant_possibilities[i][j]) << ",";
-		}
-	} */
-
-	//std::vector<std::string>  determinant;
-	//std::vector<std::string>  dependant;
-
-
-
-	/*
-	std::vector<std::string> determinant;
-	std::vector<std::string>  dependant;
-	determinant.push_back("A");
-	dependant.push_back("B");
-	table_dependencies.push_back(functional_dependency(determinant, dependant));
-	*/
-
-
-	//unordered_map<string, int> umap;
+void normalizer::set_dependencies(std::vector<functional_dependency> new_dependencies) {
+	table_dependencies = new_dependencies;
 }
 
 
@@ -267,21 +257,6 @@ void normalizer::find_dependencies() {
 
 
 
-
-
-
-
-/*
-static int callback(void *data, int argc, char **argv, char **azColName){
-   int i;
-   fprintf(stderr, "%s: ", (const char*)data);
-   for(i = 0; i<argc; i++){
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   }
-   printf("\n");
-   return 0;
-}
-*/
 
 
 
