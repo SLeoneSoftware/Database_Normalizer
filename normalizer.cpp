@@ -140,12 +140,16 @@ void normalizer::find_dependencies() {
 
 		//Here, check if any subset of dependents is consistent for every one of the same instances of a determinant
 
+		//First get all possible dependents for current determinant
+
 		for (int k = 0; k < columns_not_in_determinant.size(); k++) {
 			cur_nondets.push_back(columns_not_in_determinant[k]);
 		}
 		for (int k = 0; k < determinant_possibilities[i].size(); k++) {
 			cur_det.push_back(determinant_possibilities[i][k]);
 		}
+
+
 
 		int rc;
 		rc = sqlite3_open("test.db", &db);
