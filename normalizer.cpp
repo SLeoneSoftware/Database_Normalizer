@@ -43,9 +43,12 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 		for (int j = 0; j < cur_det.size(); j++) {
 			if (vector_int_to_string(cur_det[j]).compare(std::string(azColName[i])) != 0) {
 				determinant = determinant + std::string(argv[i]);
-			} else {
+			} 
+		}
+		for (int j = 0; j < cur_nondets.size(); j++) {
+			if (vector_int_to_string(cur_nondets[j]).compare(std::string(azColName[i])) != 0) {
 				dependant = dependant + std::string(argv[i]);
-			}
+			} 
 		}
 	}
 	if (umap.find(determinant) == umap.end()) {
@@ -144,11 +147,14 @@ void normalizer::find_dependencies() {
 		//First get all possible dependents for current determinant
 		int m = columns_not_in_determinant.size();
 		for(int k = 0; k < (1<<m); k++) {
+			cur_nondets.clear();
 			for (int j = 0; j < m; j++) {
 				if ((k & (1 << j)) > 0) {
 					cur_nondets.push_back(columns_not_in_determinant[j]);
+					//std::cout << vector_int_to_string(columns_not_in_determinant[j]);
 				}
-				//now, run brute force checker to see if this determinant -> dependent relationship should be added
+			}
+			//now, run brute force checker to see if this determinant -> dependent relationship should be added
 				int rc;
 				rc = sqlite3_open("test.db", &db);
 				char *zErrMsg = 0;
@@ -160,76 +166,27 @@ void normalizer::find_dependencies() {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
 				} else {
-					//sqlite3_close(db);
+					if (add) {
+					//TODO: Make sure there is no subset yet
+						std::vector<std::string>  determinant;
+						std::vector<std::string>  dependant;
+						for (int l = 0; l < cur_nondets.size(); l++) {
+							dependant.push_back(vector_int_to_string(cur_nondets[l]));
+							//std::cout << vector_int_to_string(cur_nondets[l]) << "\n";
+						}
+						for (int l = 0; l < determinant_possibilities[i].size(); l++) {
+							determinant.push_back(vector_int_to_string(determinant_possibilities[i][l]));
+						}
+						table_dependencies.push_back(functional_dependency(determinant, dependant));
+					}
+					//
+					umap.clear();
+					add = true;
 				}
 				sqlite3_close(db);
-
-				if (add) {
-					//TODO: Make sure there is no subset yet
-					std::vector<std::string>  determinant;
-					std::vector<std::string>  dependant;
-					for (int l = 0; l < cur_nondets.size(); l++) {
-						dependant.push_back(vector_int_to_string(cur_nondets[l]));
-					}
-					for (int l = 0; l < determinant_possibilities[i].size(); l++) {
-						determinant.push_back(vector_int_to_string(determinant_possibilities[i][l]));
-					}
-					table_dependencies.push_back(functional_dependency(determinant, dependant));
-				}
-				cur_nondets.clear();
-				cur_det.clear();
-				umap.clear();
-				columns_not_in_determinant.clear();
-				add = true;
-			}
 		}
-
-
-
-/*
-		int rc;
-		rc = sqlite3_open("test.db", &db);
-		char *zErrMsg = 0;
-		std::string sql_message = "select * from COMPANY;";
-		const char * sql = sql_message.c_str();
-		char **data;
-		rc = sqlite3_exec(db, sql, callback_two, (void*)data, &zErrMsg);
-		if( rc != SQLITE_OK ) {
-			fprintf(stderr, "SQL error: %s\n", zErrMsg);
-			sqlite3_free(zErrMsg);
-		} else {
-			sqlite3_close(db);
-		}
-		sqlite3_close(db);
-
-
-
-		if (add) {
-
-			//Make sure there is no subset yet
-
-			std::vector<std::string>  determinant;
-			std::vector<std::string>  dependant;
-
-			for (int k = 0; k < columns_not_in_determinant.size(); k++) {
-				dependant.push_back(vector_int_to_string(columns_not_in_determinant[k]));
-			}
-
-			for (int k = 0; k < determinant_possibilities[i].size(); k++) {
-				determinant.push_back(vector_int_to_string(determinant_possibilities[i][k]));
-			}
-
-			table_dependencies.push_back(functional_dependency(determinant, dependant));
-
-		}
-
-		
-		cur_nondets.clear();
-		cur_det.clear();
-		umap.clear();
 		columns_not_in_determinant.clear();
-		add = true;
-		*/
+		cur_det.clear();
 	}
 
 }
