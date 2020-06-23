@@ -41,16 +41,18 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 	std::string dependant = "";
 	for (int i = 0; i < argc; i++) {
 		for (int j = 0; j < cur_det.size(); j++) {
-			if (vector_int_to_string(cur_det[j]).compare(std::string(azColName[i])) != 0) {
+			if (vector_int_to_string(cur_det[j]).compare(std::string(azColName[i])) == 0) {
 				determinant = determinant + std::string(argv[i]);
 			} 
 		}
 		for (int j = 0; j < cur_nondets.size(); j++) {
-			if (vector_int_to_string(cur_nondets[j]).compare(std::string(azColName[i])) != 0) {
+			if (vector_int_to_string(cur_nondets[j]).compare(std::string(azColName[i])) == 0) {
 				dependant = dependant + std::string(argv[i]);
 			} 
 		}
 	}
+	//std::cout << "\n";
+	//std::cout << determinant << " -> " << dependant << "\n";
 	if (umap.find(determinant) == umap.end()) {
 		umap[determinant] = dependant;
 		//std::cout << "This tuple is okay" << "\n";
@@ -59,9 +61,10 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 			//std::cout << "Remove Dependency from chart";
 			add = false;
 		} else {
-			//std::cout << "This tuple is okay" << "\n";
+		//std::cout << "This tuple is okay" << "\n";
 		}
 	}
+	//std::cout << "\n";
    return 0;
 }
 
