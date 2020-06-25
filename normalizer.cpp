@@ -202,6 +202,14 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 	table_dependencies = new_dependencies;
 }
 
+void normalize_three_nf() {
+
+}
+
+void normalize_boyce_codd_nf() {
+	
+}
+
 
 
 
