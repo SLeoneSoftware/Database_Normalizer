@@ -168,14 +168,12 @@ void normalizer::find_dependencies() {
 						std::vector<std::string>  dependant;
 						for (int l = 0; l < cur_nondets.size(); l++) {
 							dependant.push_back(vector_int_to_string(cur_nondets[l]));
-							//std::cout << vector_int_to_string(cur_nondets[l]) << "\n";
 						}
 						for (int l = 0; l < determinant_possibilities[i].size(); l++) {
 							determinant.push_back(vector_int_to_string(determinant_possibilities[i][l]));
 						}
 						table_dependencies.push_back(functional_dependency(determinant, dependant));
 					}
-					//
 					umap.clear();
 					add = true;
 				}

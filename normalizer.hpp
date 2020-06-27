@@ -28,6 +28,5 @@ public:
 	void normalize_three_nf();
 
 	void normalize_boyce_codd_nf();
-
-
+	
 };
