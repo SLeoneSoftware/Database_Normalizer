@@ -155,7 +155,6 @@ void normalizer::find_dependencies() {
 				char **data;
 				rc = sqlite3_exec(db, sql, callback_two, (void*)data, &zErrMsg);
 				if( rc != SQLITE_OK ) {
-					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
 				} else {
 					if (add_functional_dependency && cur_nondets.size() > 0 && determinant_possibilities[i].size() > 0) {
@@ -180,6 +179,22 @@ void normalizer::find_dependencies() {
 	}
 }
 
+/* Private method to remove useless functional dependencies, including:
+   - determinant is also satisfied by a subset of that determinant
+   - dependant is also satsified by same determinant for subsets of dependants that add up to it
+   - work in progress
+   */
+void normalizer::clean_dependencies() {
+	//std::unordered_map<std::vector<std::string>, std::vector<std::string> > determinant_history;
+	/*
+	for (int i = 0; i < table_dependencies.size(); i++) {
+		functional_dependency cur_dependency = table_dependencies[i];
+		if (determinant_history.find(cur_dependency.get_determinant_names()) == determinant_history.end()) {
+			//determinant_history[cur_dependency.get_determinant_names()] = cur_dependency.get_dependent_names();
+		}
+	} */
+}
+
 std::vector<functional_dependency> normalizer::get_dependencies() {
 	return table_dependencies;
 }
@@ -190,11 +205,11 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 
 //Below Algorithms still require implementations
 
-void normalize_three_nf() {
+void normalizer::normalize_three_nf() {
 
 }
 
-void normalize_boyce_codd_nf() {
+void normalizer::normalize_boyce_codd_nf() {
 	
 }
 
