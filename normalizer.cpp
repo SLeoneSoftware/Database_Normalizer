@@ -51,23 +51,16 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 			} 
 		}
 	}
-	//std::cout << "\n";
-	//std::cout << determinant << " -> " << dependant << "\n";
 	if (umap.find(determinant) == umap.end()) {
 		umap[determinant] = dependant;
-		//std::cout << "This tuple is okay" << "\n";
 	} else {
 		if (!(umap[determinant] == dependant)) {
-			//std::cout << "Remove Dependency from chart";
 			add = false;
 		} else {
-		//std::cout << "This tuple is okay" << "\n";
 		}
 	}
-	//std::cout << "\n";
    return 0;
 }
-
 
 static int equals_vector_int(std::vector<int> one, std::vector<int> two) {
 	if (!(one.size() == two.size())) {
@@ -82,8 +75,9 @@ static int equals_vector_int(std::vector<int> one, std::vector<int> two) {
 	return 1;
 }
 
-normalizer::normalizer(char* new_filename, std::string table_name) {
+normalizer::normalizer(char* new_filename, std::string new_table_name) {
 	filename = new_filename;
+	table_name = new_table_name;
 	int rc;
 	rc = sqlite3_open(filename, &db);
 	char *zErrMsg = 0;
@@ -99,7 +93,6 @@ normalizer::normalizer(char* new_filename, std::string table_name) {
 			int_column_names.push_back(columnNames[i]);
 			const char *toAdd =  vector_int_to_string(columnNames[i]).c_str();
 			column_names.push_back(toAdd);
-			//std::cout << column_names[0] << "\n";
 		}
 
 	}
@@ -159,9 +152,9 @@ void normalizer::find_dependencies() {
 			}
 			//now, run brute force checker to see if this determinant -> dependent relationship should be added
 				int rc;
-				rc = sqlite3_open("test.db", &db);
+				rc = sqlite3_open(filename, &db);
 				char *zErrMsg = 0;
-				std::string sql_message = "select * from COMPANY;";
+				std::string sql_message = "select * from " + table_name + ";";
 				const char * sql = sql_message.c_str();
 				char **data;
 				rc = sqlite3_exec(db, sql, callback_two, (void*)data, &zErrMsg);
@@ -169,7 +162,7 @@ void normalizer::find_dependencies() {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
 				} else {
-					if (add) {
+					if (add && cur_nondets.size() > 0 && determinant_possibilities[i].size() > 0) {
 					//TODO: Make sure there is no subset yet
 						std::vector<std::string>  determinant;
 						std::vector<std::string>  dependant;

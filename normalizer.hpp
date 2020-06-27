@@ -6,6 +6,7 @@
 class normalizer {
 
 char* filename;
+std::string table_name;
 sqlite3 *db;
 std::vector<const char*> column_names;
 std::vector<std::vector<int> > int_column_names;
