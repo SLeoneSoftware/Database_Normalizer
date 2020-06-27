@@ -2,31 +2,32 @@
 #include <iostream>
 #include <unordered_map>
 
-static bool set = false;
-static bool add = true;
-static std::vector<std::vector<int> > columnNames;
+static bool columns_set = false;
+static bool add_functional_dependency = true;
+static std::vector<std::vector<int> > callback_column_names;
 static std::vector<std::vector<int> > cur_det;
 static std::vector<std::vector<int> > cur_nondets;
 std::unordered_map<std::string, std::string> umap;
 
 
-//SQL method for callback
+//Method for obtaining all column headers from sqlite db
 static int callback(void *data, int argc, char **argv, char **azColName){
-	if (!set) {
+	if (!columns_set) {
 		for(int i = 0; i<argc; i++){
 			std::vector<int> word;
-			columnNames.push_back(word);
+			callback_column_names.push_back(word);
 			std::string name = std::string(azColName[i]);
 			for (std::string::size_type j = 0; j < name.size(); j++) {
-				columnNames[i].push_back(name[j]);
+				callback_column_names[i].push_back(name[j]);
 			}
 		}
-		set = true;
+		columns_set = true;
 	}
    return 0;
 }
 
-//Above function stores all column names as vector ints to avoid some memory allocation using data parameter. Doing this increased speed on my laptop. (Feel free to change if you use this library)
+/* Above function stores all column names as vector ints to avoid some memory allocation using data parameter.
+   Doing this increased speed on my laptop. Feel free to change if you use this library */
 static std::string vector_int_to_string(std::vector<int> word) {
 	std::string toReturn;
 	for (int i = 0; i < word.size(); i++) {
@@ -35,7 +36,8 @@ static std::string vector_int_to_string(std::vector<int> word) {
 	return toReturn;
 }
 
-//SQL method for checking dependencies
+/* Brute force method to ensure there are no contradictions to the
+   current determinant -> dependant relationship */
 static int callback_two(void *data, int argc, char **argv, char **azColName){
 	std::string determinant = "";
 	std::string dependant = "";
@@ -55,8 +57,7 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 		umap[determinant] = dependant;
 	} else {
 		if (!(umap[determinant] == dependant)) {
-			add = false;
-		} else {
+			add_functional_dependency = false;
 		}
 	}
    return 0;
@@ -89,9 +90,9 @@ normalizer::normalizer(char* new_filename, std::string new_table_name) {
 		fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		sqlite3_free(zErrMsg);
 	} else {
-		for (int i = 0; i < columnNames.size(); i++) {
-			int_column_names.push_back(columnNames[i]);
-			const char *toAdd =  vector_int_to_string(columnNames[i]).c_str();
+		for (int i = 0; i < callback_column_names.size(); i++) {
+			int_column_names.push_back(callback_column_names[i]);
+			const char *toAdd =  vector_int_to_string(callback_column_names[i]).c_str();
 			column_names.push_back(toAdd);
 		}
 
@@ -104,11 +105,7 @@ char* normalizer::get_filename() {
 }
 
 void normalizer::find_dependencies() {
-
-
-
 	std::vector<std::vector<std::vector<int> > > determinant_possibilities;
-
 	//Obtain all subsets of table that could make up a determinant, load them into determinant_possibilities
 	int n = int_column_names.size();
 	for(int i = 0; i < (1<<n); i++) {
@@ -120,9 +117,9 @@ void normalizer::find_dependencies() {
 			}
 		}
 	}
-	//Now that all possibilities have been obtained, each one needs to be tested to see if it is a determinant for any dependency
-	//This Brute Force Algorithm will mark down any potential determinant -> dependent relationship in which the dependent is always the same for the same determinant, and there is no subset determinant for which this is also true
-	//Not yet finished
+	/* Now that all possibilities have been obtained, each one needs to be tested to see if it is a determinant for any dependency
+	   This Brute Force Algorithm will mark down any potential determinant -> dependent relationship in which the dependent is
+	   always the same for the same determinant */
 	for (int i = 0; i < determinant_possibilities.size(); i++) {
 		std::vector<std::vector<int> > columns_not_in_determinant;
 		for (int j = 0; j < int_column_names.size(); j++) {
@@ -139,18 +136,17 @@ void normalizer::find_dependencies() {
 		for (int k = 0; k < determinant_possibilities[i].size(); k++) {
 			cur_det.push_back(determinant_possibilities[i][k]);
 		}
-		//Here, check if any subset of dependents is consistent for every one of the same instances of a determinant
-		//First get all possible dependents for current determinant
+		/* Here, check if any subset of dependents is consistent for every one of the same instances of a determinant
+		   First get all possible dependents for current determinant */
 		int m = columns_not_in_determinant.size();
 		for(int k = 0; k < (1<<m); k++) {
 			cur_nondets.clear();
 			for (int j = 0; j < m; j++) {
 				if ((k & (1 << j)) > 0) {
 					cur_nondets.push_back(columns_not_in_determinant[j]);
-					//std::cout << vector_int_to_string(columns_not_in_determinant[j]);
 				}
 			}
-			//now, run brute force checker to see if this determinant -> dependent relationship should be added
+			//Brute force checker to see if this determinant -> dependent relationship holds true
 				int rc;
 				rc = sqlite3_open(filename, &db);
 				char *zErrMsg = 0;
@@ -162,7 +158,7 @@ void normalizer::find_dependencies() {
 					fprintf(stderr, "SQL error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
 				} else {
-					if (add && cur_nondets.size() > 0 && determinant_possibilities[i].size() > 0) {
+					if (add_functional_dependency && cur_nondets.size() > 0 && determinant_possibilities[i].size() > 0) {
 					//TODO: Make sure there is no subset yet
 						std::vector<std::string>  determinant;
 						std::vector<std::string>  dependant;
@@ -175,14 +171,13 @@ void normalizer::find_dependencies() {
 						table_dependencies.push_back(functional_dependency(determinant, dependant));
 					}
 					umap.clear();
-					add = true;
+					add_functional_dependency = true;
 				}
 				sqlite3_close(db);
 		}
 		columns_not_in_determinant.clear();
 		cur_det.clear();
 	}
-
 }
 
 std::vector<functional_dependency> normalizer::get_dependencies() {
@@ -193,6 +188,8 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 	table_dependencies = new_dependencies;
 }
 
+//Below Algorithms still require implementations
+
 void normalize_three_nf() {
 
 }
@@ -200,65 +197,4 @@ void normalize_three_nf() {
 void normalize_boyce_codd_nf() {
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
