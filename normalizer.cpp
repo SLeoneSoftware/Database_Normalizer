@@ -7,7 +7,7 @@ static bool add_functional_dependency = true;
 static std::vector<std::vector<int> > callback_column_names;
 static std::vector<std::vector<int> > cur_det;
 static std::vector<std::vector<int> > cur_nondets;
-std::unordered_map<std::string, std::string> umap;
+std::unordered_map<std::string, std::string> fd_history_map;
 
 
 //Method for obtaining all column headers from sqlite db
@@ -29,11 +29,11 @@ static int callback(void *data, int argc, char **argv, char **azColName){
 /* Above function stores all column names as vector ints to avoid some memory allocation using data parameter.
    Doing this increased speed on my laptop. Feel free to change if you use this library */
 static std::string vector_int_to_string(std::vector<int> word) {
-	std::string toReturn;
+	std::string string_form;
 	for (int i = 0; i < word.size(); i++) {
-		toReturn = toReturn + (char) word[i];
+		string_form += (char) word[i];
 	}
-	return toReturn;
+	return string_form;
 }
 
 /* Brute force method to ensure there are no contradictions to the
@@ -53,10 +53,10 @@ static int callback_two(void *data, int argc, char **argv, char **azColName){
 			} 
 		}
 	}
-	if (umap.find(determinant) == umap.end()) {
-		umap[determinant] = dependant;
+	if (fd_history_map.find(determinant) == fd_history_map.end()) {
+		fd_history_map[determinant] = dependant;
 	} else {
-		if (!(umap[determinant] == dependant)) {
+		if (!(fd_history_map[determinant] == dependant)) {
 			add_functional_dependency = false;
 		}
 	}
@@ -170,7 +170,7 @@ void normalizer::find_dependencies() {
 						}
 						table_dependencies.push_back(functional_dependency(determinant, dependant));
 					}
-					umap.clear();
+					fd_history_map.clear();
 					add_functional_dependency = true;
 				}
 				sqlite3_close(db);
