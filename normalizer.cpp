@@ -177,6 +177,7 @@ void normalizer::find_dependencies() {
 		columns_not_in_determinant.clear();
 		cur_det.clear();
 	}
+	clean_dependencies();
 }
 
 /* Private method to remove useless functional dependencies, including:
@@ -185,7 +186,17 @@ void normalizer::find_dependencies() {
    - work in progress
    */
 void normalizer::clean_dependencies() {
-	//std::unordered_map<std::vector<std::string>, std::vector<std::string> > determinant_history;
+	std::unordered_map<std::string, std::string> determinant_history;
+	for (int i = 0; i < table_dependencies.size(); i++) {
+		functional_dependency cur_functional_dependency = table_dependencies[i];
+		std::string string_form = cur_functional_dependency.toString();
+		size_t index = string_form.find(" -> ");
+		std::string cur_determinant = string_form.substr(0, index);
+		std::string cur_dependency = string_form.substr(index + 4, string_form.length());
+		if (determinant_history.find(cur_determinant) == determinant_history.end()) {
+			determinant_history[cur_determinant] = cur_dependency;
+		}
+	}
 	/*
 	for (int i = 0; i < table_dependencies.size(); i++) {
 		functional_dependency cur_dependency = table_dependencies[i];
