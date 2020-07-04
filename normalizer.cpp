@@ -181,7 +181,7 @@ void normalizer::find_dependencies() {
 }
 
 /* Private method to remove useless functional dependencies, including:
-   - determinant is also satisfied by a subset of that determinant
+   - dependency is also satisfied by a only a subset of it's determinant
    - dependant is also satsified by same determinant for subsets of dependants that add up to it
    - work in progress
    */
@@ -195,15 +195,20 @@ void normalizer::clean_dependencies() {
 		std::string cur_dependency = string_form.substr(index + 4, string_form.length());
 		if (determinant_history.find(cur_determinant) == determinant_history.end()) {
 			determinant_history[cur_determinant] = cur_dependency;
+		} else {
+			std::vector<std::string> cur_dependency_vector = cur_functional_dependency.get_dependent_names();
+			for (int i = 0; i < cur_dependency_vector.size(); i++) {
+				if (determinant_history[cur_determinant].find(cur_dependency_vector[i]) == -1) {
+					determinant_history[cur_determinant] += std::string(",") + cur_dependency_vector[i];
+				}
+			}
+			//.erase(vec.begin() + index);
 		}
+	} 
+	for (auto& it: determinant_history) {
+		//In here, check if dependency is also satisfied by a only a subset of it's determinant
+		std::cout << it.first << " -> " << it.second << "\n";
 	}
-	/*
-	for (int i = 0; i < table_dependencies.size(); i++) {
-		functional_dependency cur_dependency = table_dependencies[i];
-		if (determinant_history.find(cur_dependency.get_determinant_names()) == determinant_history.end()) {
-			//determinant_history[cur_dependency.get_determinant_names()] = cur_dependency.get_dependent_names();
-		}
-	} */
 }
 
 std::vector<functional_dependency> normalizer::get_dependencies() {
