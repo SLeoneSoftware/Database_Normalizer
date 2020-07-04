@@ -180,6 +180,19 @@ void normalizer::find_dependencies() {
 	clean_dependencies();
 }
 
+/*
+std::vector<std::string> split(std::string s, std::string delimeter) {
+	std::vector<std::string> split_string;
+	for (int i = 0; i < s.size(); i++) {
+		std::string cur_char = "";
+		cur_char += s[i];
+		std::cout << cur_char;
+	}
+	return split_string;
+}
+*/
+
+
 /* Private method to remove useless functional dependencies, including:
    - dependency is also satisfied by a only a subset of it's determinant
    - dependant is also satsified by same determinant for subsets of dependants that add up to it
@@ -206,9 +219,16 @@ void normalizer::clean_dependencies() {
 	} 
 	for (auto& it: determinant_history) {
 		//In here, check if dependency is also satisfied by a only a subset of it's determinant
+
 		std::cout << it.first << " -> " << it.second << "\n";
 	}
+	/*
+	std::string sep = " ";
+	std::string s= "1 This is an example";
+	std::vector<std::string> split_string = split(s, sep);
+	*/
 }
+
 
 std::vector<functional_dependency> normalizer::get_dependencies() {
 	return table_dependencies;
