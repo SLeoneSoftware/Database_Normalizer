@@ -27,6 +27,8 @@ public:
 
 	std::vector<functional_dependency> get_dependencies();
 
+	void find_minimum_cover();
+
 	void normalize_three_nf();
 
 	void normalize_boyce_codd_nf();

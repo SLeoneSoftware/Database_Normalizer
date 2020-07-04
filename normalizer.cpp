@@ -202,7 +202,6 @@ void normalizer::clean_dependencies() {
 					determinant_history[cur_determinant] += std::string(",") + cur_dependency_vector[i];
 				}
 			}
-			//.erase(vec.begin() + index);
 		}
 	} 
 	for (auto& it: determinant_history) {
@@ -220,6 +219,10 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 }
 
 //Below Algorithms still require implementations
+
+void normalizer::find_minimum_cover() {
+
+}
 
 void normalizer::normalize_three_nf() {
 
