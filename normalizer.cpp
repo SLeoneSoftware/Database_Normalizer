@@ -228,6 +228,7 @@ void normalizer::clean_dependencies() {
 		//In here, check if dependency is also satisfied by a only a subset of it's determinant
 
 		std::cout << it.first << " -> " << it.second << "\n";
+		functional_dependency revised_fd = functional_dependency(split_string(it.first), split_string(it.second));
 	}
 	/*
 	std::string sep = ",";
