@@ -21,13 +21,13 @@ public:
 
 	void find_dependencies();
 
-	void set_dependencies(std::vector<functional_dependency>);
+	void set_dependencies(std::vector<functional_dependency>, std::vector<std::string> schema);
 	
 	char* get_filename();
 
 	std::vector<functional_dependency> get_dependencies();
 
-	void find_minimum_cover();
+	void find_minimum_cover(std::vector<std::string> schema);
 
 	void normalize_three_nf();
 

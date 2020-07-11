@@ -240,14 +240,17 @@ std::vector<functional_dependency> normalizer::get_dependencies() {
 	return table_dependencies;
 }
 
-void normalizer::set_dependencies(std::vector<functional_dependency> new_dependencies) {
+void normalizer::set_dependencies(std::vector<functional_dependency> new_dependencies, std::vector<std::string> schema) {
 	table_dependencies = new_dependencies;
 }
 
 //Below Algorithms still require implementations
 
-void normalizer::find_minimum_cover() {
-
+void normalizer::find_minimum_cover(std::vector<std::string> schema) {
+	std::vector<functional_dependency> minimum_cover;
+	for (int i = 0; i < table_dependencies.size(); i++) {
+		
+	}
 }
 
 void normalizer::normalize_three_nf() {
