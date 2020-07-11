@@ -224,20 +224,15 @@ void normalizer::clean_dependencies() {
 			}
 		}
 	} 
+	table_dependencies.clear();
+	std::vector<functional_dependency> new_functional_dependencies;
 	for (auto& it: determinant_history) {
 		//In here, check if dependency is also satisfied by a only a subset of it's determinant
 
-		std::cout << it.first << " -> " << it.second << "\n";
-		functional_dependency revised_fd = functional_dependency(split_string(it.first), split_string(it.second));
+		//std::cout << it.first << " -> " << it.second << "\n";
+		functional_dependency revised_fd = functional_dependency(split(it.first, ","), split(it.second, ","));
+		table_dependencies.push_back(revised_fd);
 	}
-	/*
-	std::string sep = ",";
-	std::string s= "1,This,is,an,example";
-	std::vector<std::string> split_string = split(s, sep);
-	for (int i = 0; i < split_string.size(); i++) {
-		std::cout << split_string[i] << "\n";
-	}
-	*/
 }
 
 
