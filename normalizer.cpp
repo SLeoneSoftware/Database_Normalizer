@@ -246,10 +246,20 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 
 //Below Algorithms still require implementations
 
+//Currently working on this algorithm
 void normalizer::find_minimum_cover(std::vector<std::string> schema) {
 	std::vector<functional_dependency> minimum_cover;
 	for (int i = 0; i < table_dependencies.size(); i++) {
-		
+		functional_dependency cur_functional_dependency = table_dependencies[i];
+		std::vector<std::string> dependants = cur_functional_dependency.get_dependent_names();
+		for (int j = 0; j < dependants.size(); j++) {
+			std::vector<std::string> one_dependant;
+			one_dependant.push_back(dependants[j]);
+			minimum_cover.push_back(functional_dependency(cur_functional_dependency.get_determinant_names(), one_dependant));
+		}
+	}
+	for (int k = 0; k < minimum_cover.size(); k++) {
+		std::cout << minimum_cover[k].toString() << "\n";
 	}
 }
 
