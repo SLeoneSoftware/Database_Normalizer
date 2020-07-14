@@ -244,6 +244,15 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 	table_dependencies = new_dependencies;
 }
 
+void remove_extraneous(std::vector<functional_dependency> functional_dependencies) {
+	std::unordered_map<std::string, std::vector<std::string> > determinant_matchings;
+	for (int i = 0; i < functional_dependencies.size(); i++) {
+		functional_dependency cur_functional_dependency = functional_dependencies[i];
+		//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = determinant_matchings[determinant - A]
+	}
+
+}
+
 //Below Algorithms still require implementations
 
 //Currently working on this algorithm
