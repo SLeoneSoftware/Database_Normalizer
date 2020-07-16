@@ -248,6 +248,26 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 	std::unordered_map<std::string, std::vector<std::string> > determinant_matchings;
 	for (int i = 0; i < functional_dependencies.size(); i++) {
 		functional_dependency cur_functional_dependency = functional_dependencies[i];
+		std::string string_form = cur_functional_dependency.toString();
+		size_t index = string_form.find(" -> ");
+		std::string cur_determinant = string_form.substr(0, index);
+		if (determinant_matchings.find(cur_determinant) == determinant_matchings.end()) {
+			determinant_matchings[cur_determinant] = cur_functional_dependency.get_dependent_names();
+		} else {
+			std::vector<std::string> cur_dependency = cur_functional_dependency.get_dependent_names();
+			std::vector<std::string> old_dependency = determinant_matchings[cur_determinant];
+			for (int j = 0; j < cur_dependency.size(); j++) {
+				bool in = false;
+				for (int k = 0; k < old_dependency.size(); k++) {
+					if (old_dependency[k].compare(cur_dependency[j]) == 0) {
+						in = true;
+					}
+				}
+				if (!in) {
+					determinant_matchings[cur_determinant].push_back(cur_dependency[j]);
+				}
+			}
+		}
 		//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = determinant_matchings[determinant - A]
 	}
 
