@@ -296,12 +296,14 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 	}
 
 	//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = determinant_matchings[determinant - A]
-	int n = schema.size();
-	for (auto& it: determinant_matchings) {
-		//it.first it.second
-		std::vector<std::string> cur = split(it.first, ",");
-		for (int i = 0; i < cur.size(); i++) {
-
+	for (int i = 0; i < functional_dependencies.size(); i++) {
+		functional_dependency cur = functional_dependencies[i];
+		for (int j = 0; j < cur.size(); j++) {
+			/*
+			if (determinant_matchings[cur] == determinant_matchings[cur - cur[j]]) {
+				//remove cur[j] from functional_dependencies
+			}
+			*/
 		}
 	}
 
