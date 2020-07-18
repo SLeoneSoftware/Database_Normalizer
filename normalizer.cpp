@@ -1,6 +1,7 @@
 #include "normalizer.hpp"
 #include <iostream>
 #include <unordered_map>
+#include <algorithm>
 
 static bool columns_set = false;
 static bool add_functional_dependency = true;
@@ -76,7 +77,7 @@ static int equals_vector_int(std::vector<int> one, std::vector<int> two) {
 	return 1;
 }
 
-static bool equals_vector_string(std::vector<std::string> one, std::vector<std::string> two) {
+bool equals_vector_string(std::vector<std::string> one, std::vector<std::string> two) {
 	if (!(one.size() == two.size())) {
 		return false;
 	} else {
@@ -94,6 +95,30 @@ static bool equals_vector_string(std::vector<std::string> one, std::vector<std::
 		}
 	}
 	return true;
+}
+
+std::string vector_to_string(std::vector<std::string> vec) {
+	std::string result = "";
+	for (int i = 0; i < vec.size(); i++) {
+		result += vec[i];
+		if (i + 1 < vec.size()) {
+			result += ",";
+		}
+	}
+	return result;
+}
+
+std::string vector_to_string_remove_index(std::vector<std::string> vec, int exclusion_index) {
+	std::string result = "";
+	for (int i = 0; i < vec.size(); i++) {
+		if (i != exclusion_index) {
+			result += vec[i];
+			if (i + 1 < vec.size()) {
+				result += ",";
+			}
+		}
+	}
+	return result;
 }
 
 normalizer::normalizer(char* new_filename, std::string new_table_name) {
@@ -292,23 +317,24 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 				}
 			}
 		}
-		//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = determinant_matchings[determinant - A]
 	}
 
 	//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = determinant_matchings[determinant - A]
 	for (int i = 0; i < functional_dependencies.size(); i++) {
 		functional_dependency cur = functional_dependencies[i];
-		for (int j = 0; j < cur.size(); j++) {
-			/*
-			if (determinant_matchings[cur] == determinant_matchings[cur - cur[j]]) {
-				//remove cur[j] from functional_dependencies
+		for (int j = 0; j < cur.get_determinant_names().size(); j++) {
+			if (equals_vector_string(determinant_matchings[vector_to_string(cur.get_determinant_names())], determinant_matchings[vector_to_string_remove_index(cur.get_determinant_names(),j)])) {
+				    using std::swap;
+				    swap(cur.get_determinant_names()[i], cur.get_determinant_names().back());
+				    cur.get_determinant_names().pop_back();
+				    j -= 1;
 			}
-			*/
 		}
 	}
 
 
 }
+
 
 //Below Algorithms still require implementations
 
