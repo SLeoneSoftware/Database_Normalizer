@@ -79,6 +79,14 @@ static int equals_vector_int(std::vector<int> one, std::vector<int> two) {
 
 bool equals_vector_string(std::vector<std::string> one, std::vector<std::string> two) {
 	if (!(one.size() == two.size())) {
+		for (int i = 0; i < one.size(); i++) {
+			std::cout << one[i];
+		}
+		std::cout << "\n";
+		for (int i = 0; i < two.size(); i++) {
+			std::cout << two[i];
+		}
+		std::cout << "\n";
 		return false;
 	} else {
 		std::sort(one.begin(), one.end());
@@ -86,6 +94,7 @@ bool equals_vector_string(std::vector<std::string> one, std::vector<std::string>
 		for (int i = 0; i < one.size(); i++) {
 			std::string cur_one = one[i];
 			std::string cur_two = two[i];
+			std::cout << one[i] << " == " << two[i] << "\n";
 			if (cur_one.compare(cur_two) != 0) {
 					return false;
 				}
@@ -344,10 +353,13 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 			std::cout << "\n";
 			//functional_dependency revised_fd = functional_dependency(split(it.first, ","), split(it.second, ","));
 		}
+
 */
 
-
-
+//REMOVE COMMAS FROM END WHEN CHECKING DETERMINANT MATCHINGS!
+	if (equals_vector_string(determinant_matchings["ID,NAME"],determinant_matchings["ID"])) {
+		std::cout <<"true";
+	}
 
 	//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = or ENCOMPASSES determinant_matchings[determinant - A] 
 	for (int i = 0; i < functional_dependencies.size(); i++) {
@@ -355,13 +367,15 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 
 
 		for (int j = 0; j < cur.get_determinant_names().size(); j++) {
-			std::cout << vector_to_string(cur.get_determinant_names()) << "!=" << vector_to_string_remove_index(cur.get_determinant_names(),j) << "\n";
+			std::cout << vector_to_string(cur.get_determinant_names()) << " " << vector_to_string_remove_index(cur.get_determinant_names(),j)<< "\n";
 			if (equals_vector_string(determinant_matchings[vector_to_string(cur.get_determinant_names())], determinant_matchings[vector_to_string_remove_index(cur.get_determinant_names(),j)])) {
+				/*
 				    using std::swap;
 				    swap(cur.get_determinant_names()[i], cur.get_determinant_names().back());
 				    cur.get_determinant_names().pop_back();
 				    j -= 1;
 				    std::cout << "REMOVE "<< cur.get_determinant_names()[j] << "\n";
+				    */
 			}
 		}
 	}
@@ -387,7 +401,7 @@ void normalizer::find_minimum_cover(std::vector<std::string> schema) {
 	remove_extraneous(minimum_cover, schema);
 
 	for (int k = 0; k < minimum_cover.size(); k++) {
-		std::cout << minimum_cover[k].toString() << "\n";
+		//std::cout << minimum_cover[k].toString() << "\n";
 	}
 }
 
