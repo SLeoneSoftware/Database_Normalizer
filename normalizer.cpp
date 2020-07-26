@@ -81,8 +81,15 @@ bool equals_vector_string(std::vector<std::string> one, std::vector<std::string>
 	if (!(one.size() == two.size())) {
 		return false;
 	} else {
+		std::sort(one.begin(), one.end());
+		std::sort(two.begin(), two.end());
 		for (int i = 0; i < one.size(); i++) {
-			std::string cur = one[i];
+			std::string cur_one = one[i];
+			std::string cur_two = two[i];
+			if (cur_one.compare(cur_two) != 0) {
+					return false;
+				}
+			/*
 			bool in = false;
 			for (int j = 0; j < two.size(); j++) {
 				if (two[j].compare(cur) == 0) {
@@ -92,10 +99,13 @@ bool equals_vector_string(std::vector<std::string> one, std::vector<std::string>
 			if (!in) {
 				return false;
 			}
+		
+		*/
 		}
 	}
 	return true;
 }
+
 
 std::string vector_to_string(std::vector<std::string> vec) {
 	std::string result = "";
@@ -290,13 +300,18 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 }
 
 //Schema is a list of all attributes
+//TODO: check to remove transitive dependencies
 void remove_extraneous(std::vector<functional_dependency> functional_dependencies, std::vector<std::string> schema) {
 	std::unordered_map<std::string, std::vector<std::string> > determinant_matchings;
 	for (int i = 0; i < functional_dependencies.size(); i++) {
+
+		//Obtain string determinant
 		functional_dependency cur_functional_dependency = functional_dependencies[i];
 		std::string string_form = cur_functional_dependency.toString();
 		size_t index = string_form.find(" -> ");
 		std::string cur_determinant = string_form.substr(0, index);
+
+		//If no matchings yet, add everything. Else, only add what's not in
 		if (determinant_matchings.find(cur_determinant) == determinant_matchings.end()) {
 			determinant_matchings[cur_determinant] = cur_functional_dependency.get_dependent_names();
 			for (int j = 0; j < cur_functional_dependency.get_determinant_names().size(); j++) {
@@ -319,15 +334,34 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 		}
 	}
 
-	//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = determinant_matchings[determinant - A]
+
+/*
+		for (auto& it: determinant_matchings) {
+			std::cout << it.first << " -> ";
+			for (int i = 0; i < it.second.size(); i++) {
+				std::cout << it.second[i];
+			}
+			std::cout << "\n";
+			//functional_dependency revised_fd = functional_dependency(split(it.first, ","), split(it.second, ","));
+		}
+*/
+
+
+
+
+	//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = or ENCOMPASSES determinant_matchings[determinant - A] 
 	for (int i = 0; i < functional_dependencies.size(); i++) {
 		functional_dependency cur = functional_dependencies[i];
+
+
 		for (int j = 0; j < cur.get_determinant_names().size(); j++) {
+			std::cout << vector_to_string(cur.get_determinant_names()) << "!=" << vector_to_string_remove_index(cur.get_determinant_names(),j) << "\n";
 			if (equals_vector_string(determinant_matchings[vector_to_string(cur.get_determinant_names())], determinant_matchings[vector_to_string_remove_index(cur.get_determinant_names(),j)])) {
 				    using std::swap;
 				    swap(cur.get_determinant_names()[i], cur.get_determinant_names().back());
 				    cur.get_determinant_names().pop_back();
 				    j -= 1;
+				    std::cout << "REMOVE "<< cur.get_determinant_names()[j] << "\n";
 			}
 		}
 	}
@@ -350,6 +384,7 @@ void normalizer::find_minimum_cover(std::vector<std::string> schema) {
 			minimum_cover.push_back(functional_dependency(cur_functional_dependency.get_determinant_names(), one_dependant));
 		}
 	}
+	remove_extraneous(minimum_cover, schema);
 
 	for (int k = 0; k < minimum_cover.size(); k++) {
 		std::cout << minimum_cover[k].toString() << "\n";
