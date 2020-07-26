@@ -288,8 +288,8 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 }
 
 //Schema is a list of all attributes
-//TODO: check to remove transitive dependencies
-void remove_extraneous(std::vector<functional_dependency> functional_dependencies, std::vector<std::string> schema) {
+//TODO: remove identical dependencies
+std::vector<functional_dependency> remove_extraneous(std::vector<functional_dependency> functional_dependencies, std::vector<std::string> schema) {
 	std::unordered_map<std::string, std::vector<std::string> > determinant_matchings;
 	for (int i = 0; i < functional_dependencies.size(); i++) {
 
@@ -322,20 +322,6 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 		}
 	}
 
-
-/*
-		for (auto& it: determinant_matchings) {
-			std::cout << it.first << " -> ";
-			for (int i = 0; i < it.second.size(); i++) {
-				std::cout << it.second[i];
-			}
-			std::cout << "\n";
-			//functional_dependency revised_fd = functional_dependency(split(it.first, ","), split(it.second, ","));
-		}
-
-*/
-
-
 	//Remove any attributes 'A' from determinant where determinant_matchings[determinant] = or ENCOMPASSES determinant_matchings[determinant - A] 
 	for (int i = 0; i < functional_dependencies.size(); i++) {
 		functional_dependency cur = functional_dependencies[i];
@@ -343,17 +329,11 @@ void remove_extraneous(std::vector<functional_dependency> functional_dependencie
 
 		for (int j = 0; j < cur.get_determinant_names().size(); j++) {
 			if (equals_vector_string(determinant_matchings[vector_to_string(cur.get_determinant_names())], determinant_matchings[vector_to_string_remove_index(cur.get_determinant_names(),j)])) {
-					std::cout << "remove" << cur.get_determinant_names()[j] <<"\n";
 					functional_dependencies[i].set_determinant_names(split(vector_to_string_remove_index(cur.get_determinant_names(),j), ","));
 			}
 		}
 	}
-
-	for (int k = 0; k < functional_dependencies.size(); k++) {
-		std::cout << functional_dependencies[k].toString() << "\n";
-	}
-
-
+	return functional_dependencies;
 }
 
 
@@ -371,10 +351,10 @@ void normalizer::find_minimum_cover(std::vector<std::string> schema) {
 			minimum_cover.push_back(functional_dependency(cur_functional_dependency.get_determinant_names(), one_dependant));
 		}
 	}
-	remove_extraneous(minimum_cover, schema);
+	minimum_cover = remove_extraneous(minimum_cover, schema);
 
 	for (int k = 0; k < minimum_cover.size(); k++) {
-		//std::cout << minimum_cover[k].toString() << "\n";
+		std::cout << minimum_cover[k].toString() << "\n";
 	}
 }
 
