@@ -14,6 +14,14 @@ std::vector<std::string> functional_dependency::get_dependent_names() {
 	return dependent_names;
 }
 
+void functional_dependency::set_determinant_names(std::vector<std::string> new_determinant_names) {
+	determinant_names = new_determinant_names;
+}
+
+void functional_dependency::set_dependent_names(std::vector<std::string> new_dependent_names) {
+	dependent_names = new_dependent_names;
+}
+
 std::string functional_dependency::toString() {
 		std::string determinant = "";
 		std::string dependant = "";

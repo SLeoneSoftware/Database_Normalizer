@@ -14,6 +14,10 @@ public:
 
 	std::vector<std::string> get_dependent_names();
 
+	void set_determinant_names(std::vector<std::string> new_determinant_names);
+
+	void set_dependent_names(std::vector<std::string> new_dependent_names);
+
 	std::string toString();
 
 };
