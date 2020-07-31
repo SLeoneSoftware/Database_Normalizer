@@ -2,6 +2,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <algorithm>
+#include<tuple>
+#include<utility>
 
 static bool columns_set = false;
 static bool add_functional_dependency = true;
@@ -288,7 +290,7 @@ void normalizer::set_dependencies(std::vector<functional_dependency> new_depende
 }
 
 //Schema is a list of all attributes
-//TODO: remove identical dependencies
+//std::pair<int, string>
 std::vector<functional_dependency> remove_extraneous(std::vector<functional_dependency> functional_dependencies, std::vector<std::string> schema) {
 	std::unordered_map<std::string, std::vector<std::string> > determinant_matchings;
 	for (int i = 0; i < functional_dependencies.size(); i++) {
@@ -336,10 +338,8 @@ std::vector<functional_dependency> remove_extraneous(std::vector<functional_depe
 	return functional_dependencies;
 }
 
-
-//Below Algorithms still require implementations
-
 //Currently working on this algorithm
+//TODO: remove identical dependencies
 void normalizer::find_minimum_cover(std::vector<std::string> schema) {
 	std::vector<functional_dependency> minimum_cover;
 	for (int i = 0; i < table_dependencies.size(); i++) {
@@ -357,6 +357,8 @@ void normalizer::find_minimum_cover(std::vector<std::string> schema) {
 		std::cout << minimum_cover[k].toString() << "\n";
 	}
 }
+
+//Below Algorithms still require implementations
 
 void normalizer::normalize_three_nf() {
 
