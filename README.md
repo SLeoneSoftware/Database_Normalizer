@@ -13,10 +13,11 @@ There are method stubs for normalizing the database into Boyce Codd and Third No
 ## Use
 
 For all listed use cases, assume the following code has been run.
-
+```c
    char* filename = "test.db";
    std::string tablename = std::string("COMPANY");
    normalizer normalizationTool = normalizer(filename, tablename);
+```
    
 1. Find all possible dependencies.
 
@@ -24,6 +25,7 @@ For all listed use cases, assume the following code has been run.
 
 2. Manually set dependencies.
 
+```c++
    std::vector<functional_dependency> functionalDependencies;
    std::vector<std::string> determinant;
    std::vector<std::string> dependant;
@@ -43,8 +45,9 @@ For all listed use cases, assume the following code has been run.
    schema.push_back("SALARY");
 
    test.set_dependencies(functional_dependencies, schema);
-
+```
 3. Find a Minimum cover
-
+```cpp
   test.find_minimum_cover(schema);
+```
 
