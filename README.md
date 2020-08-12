@@ -20,9 +20,9 @@ For all listed use cases, assume the following code has been run.
 ```
    
 1. Find all possible dependencies.
-
+```c
   normalizationTool.find_dependencies()
-
+```
 2. Manually set dependencies.
 
 ```c
