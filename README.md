@@ -25,7 +25,7 @@ For all listed use cases, assume the following code has been run.
 
 2. Manually set dependencies.
 
-```c++
+```c
    std::vector<functional_dependency> functionalDependencies;
    std::vector<std::string> determinant;
    std::vector<std::string> dependant;
@@ -47,7 +47,7 @@ For all listed use cases, assume the following code has been run.
    test.set_dependencies(functional_dependencies, schema);
 ```
 3. Find a Minimum cover
-```cpp
+```c
   test.find_minimum_cover(schema);
 ```
 
