@@ -2,6 +2,8 @@
 
 Work in Progress.
 
+Note: A lot of this code is FAR from clean (I was focused on an internship project while making this, so I didn't exactly follow my usual programming practices). I'm currently working on some other projects. However, when I eventually cycle back to this repo, I'll clean this up.
+
 ## Project Description
 
 This is a C++ library. Currently, it finds all possible dependencies in a SQLite database (all that consistently hold up). Logic for cleaning up some of these dependencies, including removing extraneous dependencies (i.e., it removes a, b -> c if given b -> c). Most logic for finding a minimum cover is also implemented, but not entirely complete yet.
