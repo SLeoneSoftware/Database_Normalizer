@@ -46,7 +46,7 @@ For all listed use cases, assume the following code has been run.
 
    test.set_dependencies(functional_dependencies, schema);
 ```
-3. Find a Minimum cover
+3. Find a Minimum cover (Kind of works but still ironing it out)
 ```c
   test.find_minimum_cover(schema);
 ```
