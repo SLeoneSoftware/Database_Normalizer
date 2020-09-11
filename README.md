@@ -6,7 +6,7 @@ Note: A lot of this code is FAR from clean (I was focused on an internship proje
 
 ## Project Description
 
-This is a C++ library. Currently, it finds all possible dependencies in a SQLite database (all that consistently hold up). Logic for cleaning up some of these dependencies, including removing extraneous dependencies (i.e., it removes a, b -> c if given b -> c). Most logic for finding a minimum cover is also implemented, but not entirely complete yet.
+This is a C++ library. Currently, it finds all possible dependencies in a SQLite database (all that consistently hold up). Logic for cleaning up some of these dependencies, including removing extraneous dependencies (i.e., it removes a, b -> c if given b -> c), is also included. Most logic for finding a minimum cover is also implemented, but not entirely complete yet.
 
 There are method stubs for normalizing the database into Boyce Codd and Third Normal Form, if possible. These algorithms are the intended final features, so that any SQLite database can be normalized without any knowledge of databse normalization. Currently, my (repo owner) attention is turned to another project, so I likely won't be able to finish this anytime soon; I will hopefully get back to it ASAP.
 
